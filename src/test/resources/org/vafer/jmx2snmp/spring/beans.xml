@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<!--
+  <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean"/>
+-->
+
+  <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+    <property name="beans">
+      <map>
+        <entry key="bean:name=test1" value-ref="test"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="test" class="org.vafer.jmx2snmp.spring.beans.TestBeanImpl">
+    <property name="string">
+      <value>something</value>
+    </property>
+  </bean>
+</beans>

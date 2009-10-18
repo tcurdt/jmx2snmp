@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.vafer</groupId>
+        <artifactId>maven-pom</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>org.vafer</groupId>
+    <artifactId>jmx2snmp</artifactId>
+    <name>jmx2snmp</name>
+    <version>1.0-SNAPSHOT</version>
+    <description>
+    </description>
+    <url>http://github.com/tcurdt/jmx2snmp</url>
+
+    <developers>
+        <developer>
+            <id>tcurdt</id>
+            <name>Torsten Curdt</name>
+            <email>tcurdt at vafer.org</email>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com:tcurdt/jmx2snmp.git</connection>
+        <developerConnection>scm:git:git://github.com:tcurdt/jmx2snmp.git</developerConnection>
+        <url>http://github.com/tcurdt/jmx2snmp/tree/master</url>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.snmp4j</groupId>
+            <artifactId>snmp4j-agent</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>org.snmp4j</groupId>
+            <artifactId>snmp4j</artifactId>
+            <version>1.10.1</version>
+        </dependency> -->
+        <dependency>
+            <groupId>jmxutils</groupId>
+            <artifactId>jmxutils</artifactId>
+            <version>1.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>never</forkMode>
+                    <includes>
+                        <include>**/*TestCase.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/Abstract*</exclude>
+                    </excludes>
+                    <testFailureIgnore>true</testFailureIgnore>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-source-jar</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>jmxutils:jmxutils</include>
+                                    <include>org.snmp4j:snmp4j-agent</include>
+                                    <!-- <include>org.snmp4j:snmp4j</include> -->
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.snmp4j</pattern>
+                                    <shadedPattern>org.vafer.jmx2snmp.snmp4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>mt.jmxutils</pattern>
+                                    <shadedPattern>org.vafer.jmx2snmp.jmxutils</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
