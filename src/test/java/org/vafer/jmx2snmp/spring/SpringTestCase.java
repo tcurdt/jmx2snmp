@@ -18,15 +18,14 @@ public class SpringTestCase {
 
 	@Test
 	public void testStartup() throws Exception {
-		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
-		jmxServer.start();	
 
 		// BasicConfigurator.configure();		
 		final BeanFactory factory = new XmlBeanFactory(new ClassPathResource("org/vafer/jmx2snmp/spring/beans.xml"));
 		// this should not be required
 		factory.getBean("exporter");	
 
-		jmxServer.load();
+		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
+		jmxServer.start();	
 
 		final URL url = SpringTestCase.class.getResource("/org/vafer/jmx2snmp/mapping.properties");
 		

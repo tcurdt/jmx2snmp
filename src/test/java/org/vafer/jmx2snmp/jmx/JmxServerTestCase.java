@@ -15,13 +15,11 @@ public final class JmxServerTestCase {
 
 	@Test
 	public void testSomething() throws Exception {
-		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
-		jmxServer.start();	
-
 		final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
 		exporter.export("bean:name=test1", new TestBeanImpl());	
 
-		jmxServer.load();
+		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
+		jmxServer.start();	
 
 		assertEquals("service:jmx:rmi://127.0.0.1:0/jndi/rmi://127.0.0.1:5100/connector", jmxServer.getUrl());
 		assertEquals(5100, jmxServer.getNamingPort());

@@ -89,15 +89,12 @@ public class JmxServer {
 				ManagementFactory.getPlatformMBeanServer()
 				);
 
-		rmiServer.start();		
+		rmiServer.start();
+
+		buildMap();
 	}
 	
-	public JmxAttribute getAttributeAtPath(String pPath) {
-		final Map<String, JmxAttribute> attributes = attributesRef.get();
-		return attributes.get(pPath);
-	}
-	
-	public synchronized void load() throws Exception {
+	private void buildMap() throws Exception {
 		final HashMap<String, JmxAttribute> newAttributes = new HashMap<String, JmxAttribute>();
 		
 		final MBeanServer mbeanServer = rmiServer.getMBeanServer();
@@ -122,6 +119,11 @@ public class JmxServer {
 		}
 		
 		attributesRef.set(Collections.unmodifiableMap(newAttributes));
+	}
+
+	public JmxAttribute getAttributeAtPath(String pPath) {
+		final Map<String, JmxAttribute> attributes = attributesRef.get();
+		return attributes.get(pPath);
 	}
 
 	public synchronized void stop() throws Exception {

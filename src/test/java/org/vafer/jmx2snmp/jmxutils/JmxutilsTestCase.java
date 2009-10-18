@@ -19,13 +19,11 @@ public class JmxutilsTestCase {
 
 	@Test
 	public void testStartup() throws Exception {
-		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
-		jmxServer.start();	
-
 		final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
 		exporter.export("bean:name=test1", new TestBeanImpl());	
 
-		jmxServer.load();
+		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
+		jmxServer.start();	
 
 		final URL url = JmxutilsTestCase.class.getResource("/org/vafer/jmx2snmp/mapping.properties");
 		
