@@ -1,8 +1,14 @@
 package org.vafer.jmx2snmp.snmp;
 
+import java.io.FileReader;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.net.URL;
+import java.util.Scanner;
 
 import javax.management.JMException;
+
+import mt.jmx.MBeanExporter;
 
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
@@ -21,6 +27,8 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.vafer.jmx2snmp.jmx.JmxAttribute;
 import org.vafer.jmx2snmp.jmx.JmxMib;
 import org.vafer.jmx2snmp.jmx.JmxServer;
+import org.vafer.jmx2snmp.jmxutils.JmxutilsTestCase;
+import org.vafer.jmx2snmp.jmxutils.beans.TestBeanImpl;
 
 public final class SnmpBridge implements CommandResponder {
 
@@ -174,29 +182,29 @@ public final class SnmpBridge implements CommandResponder {
 		
 	}
 	
-//	public static void main(String[] args) throws Exception {
-//		
-//		System.out.println("starting...");
-//		
-//		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
-//		jmxServer.start();
-//
-//		final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
-//		exporter.export("bean:name=test1", new TestBeanImpl());		
-//
-//		jmxServer.load();
-//		
-//		final JmxMib jmxMapping = new JmxMib();
-//		jmxMapping.load(new FileReader("/Users/tcurdt/Development/jmxexporter/src/test/resources/org/vafer/jmxexporter/mapping.properties"));
-//
-//		final SnmpBridge jmxBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxServer, jmxMapping);
-//		jmxBridge.start();
-//		
-//		System.out.println("enter 'quit' to stop...");
-//		final Scanner sc = new Scanner(System.in);
-//	    while(!sc.nextLine().equals("quit"));
-//	    
-//	    jmxBridge.stop();
-//	    jmxServer.stop();
-//	}	
+	public static void main(String[] args) throws Exception {
+		
+		System.out.println("starting...");
+		
+		final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
+		exporter.export("bean:name=test1", new TestBeanImpl());		
+
+		final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
+		jmxServer.start();
+
+		final URL url = JmxutilsTestCase.class.getResource("/org/vafer/jmx2snmp/mapping.properties");
+		
+		final JmxMib jmxMib = new JmxMib();
+		jmxMib.load(new FileReader(url.getFile()));
+
+		final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("192.168.214.1"), 1161, jmxServer, jmxMib);
+		snmpBridge.start();
+		
+		System.out.println("enter 'quit' to stop...");
+		final Scanner sc = new Scanner(System.in);
+	    while(!sc.nextLine().equals("quit"));
+	    
+	    snmpBridge.stop();
+	    jmxServer.stop();
+	}	
 }
