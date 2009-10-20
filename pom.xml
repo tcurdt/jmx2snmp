@@ -44,15 +44,15 @@
             <artifactId>snmp4j-agent</artifactId>
             <version>1.3.1</version>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>org.snmp4j</groupId>
             <artifactId>snmp4j</artifactId>
             <version>1.10.1</version>
-        </dependency> -->
+        </dependency>
         <dependency>
-            <groupId>jmxutils</groupId>
+            <groupId>mt.jmx</groupId>
             <artifactId>jmxutils</artifactId>
-            <version>1.2.4</version>
+            <version>1.2.2</version>
         </dependency>
 
         <dependency>
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.5.0</version>
+            <version>4.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -124,19 +124,19 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>jmxutils:jmxutils</include>
+                                    <include>mt.jmx:jmxutils</include>
                                     <include>org.snmp4j:snmp4j-agent</include>
-                                    <!-- <include>org.snmp4j:snmp4j</include> -->
+                                    <include>org.snmp4j:snmp4j</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>org.snmp4j</pattern>
-                                    <shadedPattern>org.vafer.jmx2snmp.snmp4j</shadedPattern>
+                                    <shadedPattern>org.vafer.jmx2snmp.shaded.snmp4j</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>mt.jmxutils</pattern>
-                                    <shadedPattern>org.vafer.jmx2snmp.jmxutils</shadedPattern>
+                                    <pattern>mt.jmx</pattern>
+                                    <shadedPattern>org.vafer.jmx2snmp.shaded.jmxutils</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -146,4 +146,10 @@
         </plugins>
     </build>
 
+    <repositories>
+      <repository>
+        <id>local</id>
+        <url>file:${basedir}/lib</url>
+      </repository>
+    </repositories>
 </project>
