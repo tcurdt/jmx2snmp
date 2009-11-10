@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import mt.jmx.Managed;
+import org.weakref.jmx.Managed;
 
 import org.vafer.jmx2snmp.beans.TestBean;
 import org.vafer.jmx2snmp.beans.TestRow;

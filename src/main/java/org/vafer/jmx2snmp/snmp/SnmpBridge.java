@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import javax.management.JMException;
 
-import mt.jmx.MBeanExporter;
+import org.weakref.jmx.MBeanExporter;
 
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;

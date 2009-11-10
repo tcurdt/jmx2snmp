@@ -50,9 +50,9 @@
             <version>1.10.1</version>
         </dependency>
         <dependency>
-            <groupId>mt.jmx</groupId>
+            <groupId>org.weakref</groupId>
             <artifactId>jmxutils</artifactId>
-            <version>1.2.2</version>
+            <version>1.3</version>
         </dependency>
 
         <dependency>
@@ -124,7 +124,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>mt.jmx:jmxutils</include>
+                                    <include>org.weakref:jmxutils</include>
                                     <include>org.snmp4j:snmp4j-agent</include>
                                     <include>org.snmp4j:snmp4j</include>
                                 </includes>
@@ -135,7 +135,7 @@
                                     <shadedPattern>org.vafer.jmx2snmp.shaded.snmp4j</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>mt.jmx</pattern>
+                                    <pattern>org.weakref.jmx</pattern>
                                     <shadedPattern>org.vafer.jmx2snmp.shaded.jmxutils</shadedPattern>
                                 </relocation>
                             </relocations>
@@ -145,11 +145,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-      <repository>
-        <id>local</id>
-        <url>file:${basedir}/lib</url>
-      </repository>
-    </repositories>
 </project>

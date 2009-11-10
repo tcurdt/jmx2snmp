@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 
-import mt.jmx.MBeanExporter;
+import org.weakref.jmx.MBeanExporter;
 
 import org.junit.Test;
 import org.vafer.jmx2snmp.jmxutils.beans.TestBeanImpl;
