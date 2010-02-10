@@ -7,13 +7,13 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
 
-import org.weakref.jmx.MBeanExporter;
-
 import org.junit.Test;
+import org.vafer.jmx2snmp.jmx.JmxIndex;
 import org.vafer.jmx2snmp.jmx.JmxMib;
 import org.vafer.jmx2snmp.jmx.JmxServer;
 import org.vafer.jmx2snmp.jmxutils.beans.TestBeanImpl;
 import org.vafer.jmx2snmp.snmp.SnmpBridge;
+import org.weakref.jmx.MBeanExporter;
 
 public class JmxutilsTestCase {
 
@@ -32,12 +32,23 @@ public class JmxutilsTestCase {
 		final JmxMib jmxMapping = new JmxMib();
 		jmxMapping.load(new FileReader(url.getFile()));
 		
-		final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxServer, jmxMapping);
+		final JmxIndex jmxIndex = new JmxIndex();
+		
+		final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxIndex, jmxMapping);
 		snmpBridge.start();
 
 		assertNotNull(jmxServer);
+		assertNotNull(jmxIndex);
 		assertNotNull(snmpBridge);
 
+		// snmpwalk -On -c public -v 1 localhost:1161 1.3.6.1.4.1.27305.12
+		// snmpget -On -c public -v 1 localhost:1161 1.3.6.1.4.1.27305.12.8
+
+//		System.out.println("enter 'quit' to stop...");		
+//		final Scanner sc = new Scanner(System.in);
+//	    while(!sc.nextLine().equals("quit"));
+		
+		snmpBridge.report();
 		
 		snmpBridge.stop();
 		jmxServer.stop();

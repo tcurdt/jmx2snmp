@@ -8,10 +8,29 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class JmxMib {
+/**
+ * The JmxMib represents a walk-able SNMP OID tree. The tree is loaded and
+ * constructed from a load(Reader). The expect format include a definition
+ * for the root node as "<oid>" and all other nodes.
+ * 
+ * 1.3.6.1.4.1.27305 = <oid>
+ * 1.3.6.1.4.1.27305.12 = bean1
+ * 1.3.6.1.4.1.27305.12.1 = AnotherInt
+ * 1.3.6.1.4.1.27305.12.2 = SomeColor
+ * 1.3.6.1.4.1.27305.12.3 = TheBoolean
+ * 
+ * @threadsafe yes
+ */
+public final class JmxMib {
 
 	private final AtomicReference<Node> root = new AtomicReference<Node>(new Node(null, 0, null));
 
+	public static class Bean {
+		public boolean leaf;
+		public String relativePath;
+		public String absolutePath;
+	};
+	
 	private static class Node {
 
 		public final Node parent;
@@ -53,6 +72,21 @@ public class JmxMib {
 			return parentPath + '.' + value;
 		}
 		
+//		public Node find(String path) {
+//			if (path.equals(this.getPath())) {
+//				return this;
+//			}
+//			
+//			for(Node child : childs.values()) {
+//				final Node node = child.find(path);
+//				if (node != null) {
+//					return node;
+//				}
+//			}
+//			
+//			return null;
+//		}
+		
 		public Node getNext() {
 			Node leaf = this;
 			while(leaf.childs.size() > 0) {
@@ -74,6 +108,9 @@ public class JmxMib {
 				final Node sibling = p.childAfter(n.idx);
 
 				if (sibling != null) {
+					if (sibling.childs.size() > 0) {
+						return sibling.getNext();
+					}
 					return sibling;
 				}
 
@@ -141,7 +178,7 @@ public class JmxMib {
 		
 		return node;
 	}
-		
+
 	public synchronized void load(Reader pConfigReader) throws IOException {		
 		final BufferedReader br = new BufferedReader(pConfigReader);
 
@@ -196,4 +233,31 @@ public class JmxMib {
 	public int getNodeCount() {
 		return root.get().getNodeCount() - 1;
 	}
+	
+	private void fillMapping(Node node, TreeMap<String,Bean> map) {
+		
+		if (node.value != null) {
+			Bean bean = new Bean();
+			bean.leaf = node.childs.size() == 0;
+			bean.relativePath = node.value;
+			bean.absolutePath = node.getPath();
+			map.put(node.getOid(), bean);			
+		}
+		
+		for(Node child : node.childs.values()) {
+			fillMapping(child, map);
+		}		
+	}
+	
+	public TreeMap<String,Bean> getMapping() {
+
+		final TreeMap<String,Bean> map = new TreeMap<String,Bean>();
+		
+		final Node node = root.get();
+		
+		fillMapping(node, map);
+
+		return map;
+	}
+
 }

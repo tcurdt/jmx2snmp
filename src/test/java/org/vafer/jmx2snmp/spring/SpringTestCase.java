@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.vafer.jmx2snmp.jmx.JmxIndex;
 import org.vafer.jmx2snmp.jmx.JmxMib;
 import org.vafer.jmx2snmp.jmx.JmxServer;
 import org.vafer.jmx2snmp.snmp.SnmpBridge;
@@ -34,10 +35,13 @@ public class SpringTestCase {
 		final JmxMib jmxMapping = new JmxMib();
 		jmxMapping.load(new FileReader(url.getFile()));
 		
-		final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxServer, jmxMapping);
+		final JmxIndex jmxIndex = new JmxIndex();
+		
+		final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxIndex, jmxMapping);
 		snmpBridge.start();
 
 		assertNotNull(jmxServer);
+		assertNotNull(jmxIndex);
 		assertNotNull(snmpBridge);
 
 		snmpBridge.stop();

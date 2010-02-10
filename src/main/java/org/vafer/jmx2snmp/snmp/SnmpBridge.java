@@ -1,14 +1,11 @@
 package org.vafer.jmx2snmp.snmp;
 
-import java.io.FileReader;
-import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
-import java.net.URL;
-import java.util.Scanner;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.management.JMException;
-
-import org.weakref.jmx.MBeanExporter;
 
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
@@ -25,27 +22,61 @@ import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.vafer.jmx2snmp.jmx.JmxAttribute;
+import org.vafer.jmx2snmp.jmx.JmxIndex;
 import org.vafer.jmx2snmp.jmx.JmxMib;
-import org.vafer.jmx2snmp.jmx.JmxServer;
-// import org.vafer.jmx2snmp.jmxutils.JmxutilsTestCase;
-// import org.vafer.jmx2snmp.jmxutils.beans.TestBeanImpl;
+import org.vafer.jmx2snmp.jmx.JmxMib.Bean;
 
+/**
+ * The SnmpBridge starts a SNMP agent and provides access to the MBean objects. 
+ * It looks up the JMX attribute path from the JmxMib mapping and looks up the
+ * JmxAttribute from the JmxIndex.
+ * 
+ * Calling report() on startup will log mapping incosistencies to System.err
+ */
 public final class SnmpBridge implements CommandResponder {
 
 	private final InetAddress address;
 	private final int port;
-	private final JmxServer jmxServer;
+	private final JmxIndex jmxIndex;
 	private final JmxMib jmxMib;
 
 	private Snmp snmp;
 	
-	public SnmpBridge(InetAddress pAddress, int pPort, JmxServer pJmxServer, JmxMib pJmxMib) {
+	public SnmpBridge(InetAddress pAddress, int pPort, JmxIndex pJmxIndex, JmxMib pJmxMib) {
 		address = pAddress;
 		port = pPort;
-		jmxServer = pJmxServer;
+		jmxIndex = pJmxIndex;
 		jmxMib = pJmxMib;
 	}
 	
+	public void report() {
+
+		final Map<String,Bean> mibMapping = jmxMib.getMapping();
+
+		final Set<String> attributesInMib = new HashSet<String>();
+		final Set<String> attributesInIndex = new HashSet<String>(jmxIndex.getAttributePaths());		
+		for(Map.Entry<String, Bean> entry : mibMapping.entrySet()) {
+			String oid = entry.getKey();
+			Bean bean = entry.getValue();
+			if (attributesInIndex.contains(bean.absolutePath)) {
+				if (attributesInMib.contains(bean.absolutePath)) {
+					System.err.println("jmx2snmp: attribute mapping for [" + bean.absolutePath + "] found more than once");
+				}
+				attributesInMib.add(bean.absolutePath);
+			} else {
+				if (bean.leaf) {
+					System.err.println("jmx2snmp: attribute [" + bean.absolutePath + "] no longer exists at OID [" + oid + "]");
+				}
+			}
+		}
+		
+		attributesInIndex.removeAll(attributesInMib);
+		
+		for(String attribute : attributesInIndex) {
+			System.err.println("jmx2snmp: attribute not mapped yet: " + attribute);
+		}
+
+	}
 	
 	public void processPdu(CommandResponderEvent pRequest) {
 
@@ -71,7 +102,7 @@ public final class SnmpBridge implements CommandResponder {
             			continue;
             		}
             		
-            		final JmxAttribute attribute = jmxServer.getAttributeAtPath(path);
+            		final JmxAttribute attribute = jmxIndex.getAttributeAtPath(path);
 
             		if (attribute == null) {
             			binding.setVariable(Null.noSuchObject);
@@ -108,7 +139,7 @@ public final class SnmpBridge implements CommandResponder {
             			continue;
             		}
 
-            		final JmxAttribute attribute = jmxServer.getAttributeAtPath(path);
+            		final JmxAttribute attribute = jmxIndex.getAttributeAtPath(path);
             		
             		if (attribute == null) {
             			binding.setVariable(Null.noSuchObject);
@@ -197,7 +228,9 @@ public final class SnmpBridge implements CommandResponder {
     //  final JmxMib jmxMib = new JmxMib();
     //  jmxMib.load(new FileReader(url.getFile()));
     // 
-    //  final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("192.168.214.1"), 1161, jmxServer, jmxMib);
+	//  final JmxIndex jmxIndex = new JmxIndex();
+	//
+    //  final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("192.168.214.1"), 1161, jmxIndex, jmxMib);
     //  snmpBridge.start();
     //  
     //  System.out.println("enter 'quit' to stop...");

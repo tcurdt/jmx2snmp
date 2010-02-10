@@ -4,7 +4,12 @@ import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-public class JmxAttribute {
+/**
+ * Represents a property exposed through the MBeanServer 
+ * 
+ * @threadsafe yes
+ */
+public final class JmxAttribute {
 	
 	private final String attributeName;
 	private final String type;
@@ -41,5 +46,4 @@ public class JmxAttribute {
 		final Object attributeValue = mbeanServer.getAttribute(objectName, attributeName);					
 		return attributeValue;
 	}
-
 }
