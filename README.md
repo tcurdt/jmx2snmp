@@ -1,24 +1,24 @@
 # Bridge
 
     // export JMX beans either through Spring, Guice or jmxutils
-	final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
-	exporter.export("bean:name=test1", new TestBeanImpl());	
+    final MBeanExporter exporter = new MBeanExporter(ManagementFactory.getPlatformMBeanServer());
+    exporter.export("bean:name=test1", new TestBeanImpl()); 
 
     // fire up JMX
-	final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
-	jmxServer.start();	
+    final JmxServer jmxServer = new JmxServer(InetAddress.getByName("localhost"));
+    jmxServer.start();  
 
     // load mib mapping
-	final URL url = JmxutilsTestCase.class.getResource("/org/vafer/jmx2snmp/mapping.properties");
-	final JmxMib jmxMib = new JmxMib();
-	jmxMib.load(new FileReader(url.getFile()));
+    final URL url = JmxutilsTestCase.class.getResource("/org/vafer/jmx2snmp/mapping.properties");
+    final JmxMib jmxMib = new JmxMib();
+    jmxMib.load(new FileReader(url.getFile()));
 
     // build MBean index
     final JmxIndex = new JmxIndex();
     
-	// fire up SNMP bridge
-	final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxIndex, jmxMib);
-	snmpBridge.start();
+    // fire up SNMP bridge
+    final SnmpBridge snmpBridge = new SnmpBridge(InetAddress.getByName("localhost"), 1161, jmxIndex, jmxMib);
+    snmpBridge.start();
 
     // show inconsistencies in the mapping (if there are)
     snmpBridge.report();
